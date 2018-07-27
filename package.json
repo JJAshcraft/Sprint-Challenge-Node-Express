@@ -1,0 +1,12 @@
+{
+  "name": "Sprint-Challenge-Node-Express",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": "https://github.com/JJAshcraft/Sprint-Challenge-Node-Express.git",
+  "author": "JJ Ashcraft <jj@jjashcraft.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "knex": "^0.15.2"
+  }
+}
