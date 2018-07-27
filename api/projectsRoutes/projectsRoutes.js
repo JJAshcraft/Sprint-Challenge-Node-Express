@@ -17,6 +17,12 @@ router.post('/', (req, res, next) => {
         description,
         completed,
     }
+    if (newProject.name.length > 128) {
+        return next({
+            code: 128,
+            message: "Name Field: Character limit exceeded (128 characters)."
+        })
+    }
     if (!newProject.description || !newProject.name) {
         return next({
             code: 400
@@ -53,10 +59,48 @@ router.get('/', (req, res, next) => {
         }))
 })
 
+//READ// GET A SPECIFIC PROJECT
+router.get('/:project_id', (req, res, next) => {
+    let project_id = req.params.project_id;
+    projectsDb.get(project_id)
+        .then(project => {
+            if (!project || project.length === 0) {
+                return next({
+                    code: 404
+                })
+            } else {
+                console.log(project)
+                res.status(200).json(project)
+            }
+        })
+        .catch(err => next({
+            code: 500
+        }))
+})
+
+//READ// GET ALL ACTIONS FOR A SPECIFIC PROJECT
+router.get('/:project_id/actions', (req, res, next) => {
+    let project_id = req.params.project_id;
+    projectsDb.getProjectActions(project_id)
+        .then(actions => {
+            if (!actions || actions.length === 0) {
+                return next({
+                    code: 404
+                })
+            } else {
+                console.log(actions)
+                res.status(200).json(actions)
+            }
+        })
+        .catch(err => next({
+            code: 500
+        }))
+})
+
 //UPDATE//UPDATE PROJECT
 
-router.put('/:projectId', (req, res, next) => {
-    let projectId = req.params.projectId;
+router.put('/:project_id', (req, res, next) => {
+    let project_id = req.params.project_id;
     let name = req.body.name;
     let description = req.body.description;
     let completed = req.body.completed;
@@ -65,17 +109,23 @@ router.put('/:projectId', (req, res, next) => {
     } else {
         completed = false;
     }
-    let newProject = {
+    let updatedProject = {
         name,
         description,
         completed,
     }
-    if (!newProject.description || !newProject.name) {
+    if (updatedProject.name.length > 128) {
+        return next({
+            code: 128,
+            message: "Name Field: Character limit exceeded (128 characters)."
+        })
+    }
+    if (!updatedProject.description || !updatedProject.name) {
         return next({
             code: 400
         })
     } else {
-        projectsDb.update(projectId, newProject)
+        projectsDb.update(project_id, updatedProject)
             .then(projects => {
                 console.log(projects)
                 res.status(200).json(projects)
@@ -89,9 +139,9 @@ router.put('/:projectId', (req, res, next) => {
 
 //DELETE//DELETE A PROJECT
 
-router.delete('/:projectId', (req, res, next) => {
-    let projectId = req.params.projectId;
-    projectsDb.remove(projectId)
+router.delete('/:project_id', (req, res, next) => {
+    let project_id = req.params.project_id;
+    projectsDb.remove(project_id)
         .then(project => {
             if (!project) {
                 return next({
@@ -104,7 +154,7 @@ router.delete('/:projectId', (req, res, next) => {
         })
         .catch(err => next({
             code: 500
-}))
+        }))
 })
 
 
